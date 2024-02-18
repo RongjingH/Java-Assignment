@@ -42,6 +42,7 @@ public class User {
                 }
             }
             this.tasks = newTasks;
+            System.out.println("Deleted successfully!");
         }
     }
 
@@ -67,11 +68,12 @@ public class User {
     public void update(int pre, int cur) {
         int[] indices = search(pre);
         if (indices.length == 0) {
-            System.out.println("This task is not in your array");
+            System.out.println("This task you want to update is not in your array");
         } else {
             for (int i = 0; i < indices.length; i++) {
                 this.tasks[indices[i]] = cur;
             }
+            System.out.println("Updated successfully!");
         }
     }
 
