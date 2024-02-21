@@ -4,6 +4,7 @@ import dao.UserDAO;
 import dao.UserDAOImpl;
 import exception.IllegalLoginException;
 import exception.InvalidBoardingException;
+import exception.InvalidClientMenuException;
 import model.Client;
 import model.Task;
 import model.User;
@@ -107,7 +108,7 @@ public class Main {
 
         System.out.println("Login successful. Welcome, " + username + "!");
         if (user instanceof Client) {
-            clientMenu();
+                clientMenu();
         } else if (user instanceof Visitor) {
             visitorMenu();
         }
@@ -128,78 +129,84 @@ public class Main {
             int choice = scanner.nextInt();
             scanner.nextLine(); // Consume newline
 
-            switch (choice) {
-                case 1:
-                    System.out.println("Enter task title");
-                    String newTaskTitle = scanner.nextLine();
+            try {
+                switch (choice) {
+                    case 1:
+                        System.out.println("Enter task title");
+                        String newTaskTitle = scanner.nextLine();
 
-                    Task newTask = new Task(newTaskTitle);
+                        Task newTask = new Task(newTaskTitle);
 
-                    System.out.println("Enter task text");
-                    String newTaskText = scanner.nextLine();
-                    newTask.setTaskText(newTaskText);
+                        System.out.println("Enter task text");
+                        String newTaskText = scanner.nextLine();
+                        newTask.setTaskText(newTaskText);
 
-                    taskDAO.addTask(newTask);
-                    break;
-                case 2:
-                    System.out.println("Enter task title which you want to update");
-                    String updateTaskPreviousTitle = scanner.nextLine();
-                    Task updateTask = taskDAO.searchTask(updateTaskPreviousTitle);
-                    if(updateTask == null) {
-                        System.out.println("Task not found!");
-                    } else {
-                        System.out.println("Enter new task title");
-                        String updateTaskNewTitle = scanner.nextLine();
+                        taskDAO.addTask(newTask);
+                        break;
+                    case 2:
+                        System.out.println("Enter task title which you want to update");
+                        String updateTaskPreviousTitle = scanner.nextLine();
+                        Task updateTask = taskDAO.searchTask(updateTaskPreviousTitle);
+                        if(updateTask == null) {
+                            System.out.println("Task not found!");
+                        } else {
+                            System.out.println("Enter new task title");
+                            String updateTaskNewTitle = scanner.nextLine();
 
-                        System.out.println("Enter new task text");
-                        String updateTaskNewText = scanner.nextLine();
+                            System.out.println("Enter new task text");
+                            String updateTaskNewText = scanner.nextLine();
 
-                        taskDAO.updateTask(updateTask, updateTaskNewTitle, updateTaskNewText);
-                    }
-                    break;
-                case 3:
-                    System.out.println("Enter task title");
-                    String deleteTaskTitle = scanner.nextLine();
+                            taskDAO.updateTask(updateTask, updateTaskNewTitle, updateTaskNewText);
+                        }
+                        break;
+                    case 3:
+                        System.out.println("Enter task title");
+                        String deleteTaskTitle = scanner.nextLine();
 
-                    taskDAO.deleteTask(deleteTaskTitle);
-                    break;
-                case 4:
-                    System.out.println("Enter task title");
-                    String searchTaskTitle = scanner.nextLine();
-                    Task searchTack = taskDAO.searchTask(searchTaskTitle);
-                    if (searchTack == null) {
-                        System.out.println("There is no " + searchTaskTitle);
-                    } else {
-                        System.out.println("The id of task " + searchTaskTitle + " is " + searchTack.getTaskId());
-                    }
-                    break;
-                case 5:
-                    System.out.println("Enter task title");
-                    String assignTaskTitle = scanner.nextLine();
+                        taskDAO.deleteTask(deleteTaskTitle);
+                        break;
+                    case 4:
+                        System.out.println("Enter task title");
+                        String searchTaskTitle = scanner.nextLine();
+                        Task searchTack = taskDAO.searchTask(searchTaskTitle);
+                        if (searchTack == null) {
+                            System.out.println("There is no " + searchTaskTitle);
+                        } else {
+                            System.out.println("The id of task " + searchTaskTitle + " is " + searchTack.getTaskId());
+                        }
+                        break;
+                    case 5:
+                        System.out.println("Enter task title");
+                        String assignTaskTitle = scanner.nextLine();
 
-                    System.out.println("Enter visitor name");
-                    String assignUserName = scanner.nextLine();
+                        System.out.println("Enter visitor name");
+                        String assignUserName = scanner.nextLine();
 
-                    User assignUser = userDAO.getUser(assignUserName);
+                        User assignUser = userDAO.getUser(assignUserName);
 
-                    if (assignUser != null && assignUser instanceof Visitor) {
-                        Visitor assignVisitor = (Visitor) assignUser;
-                        taskDAO.assignTask(assignTaskTitle, assignVisitor);
-                    } else {
-                        System.out.println("Visitor not found!");
-                    }
-                    break;
-                case 6:
-                    taskDAO.presentTask();
-                    break;
-                case 0:
-                    currentUser = null; // Clear current user
-                    return;
-                default:
-                    System.out.println("Invalid choice. Please try again.");
+                        if (assignUser != null && assignUser instanceof Visitor) {
+                            Visitor assignVisitor = (Visitor) assignUser;
+                            taskDAO.assignTask(assignTaskTitle, assignVisitor);
+                        } else {
+                            System.out.println("Visitor not found!");
+                        }
+                        break;
+                    case 6:
+                        taskDAO.presentTask();
+                        break;
+                    case 0:
+                        currentUser = null; // Clear current user
+                        return;
+                    default:
+                        throw new InvalidClientMenuException("Invalid choice. Please try again.");
+                }
+            } catch (Exception e) {
+                System.out.println("Invalid choice of " + choice + ". Please try again.");
             }
+
         }
     }
+
 
     private static void visitorMenu() {
         Visitor visitor = (Visitor) currentUser;
