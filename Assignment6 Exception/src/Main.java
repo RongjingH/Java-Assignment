@@ -2,6 +2,7 @@ import dao.TaskDAO;
 import dao.TaskDAOImpl;
 import dao.UserDAO;
 import dao.UserDAOImpl;
+import exception.IllegalLoginException;
 import exception.InvalidBoardingException;
 import model.Client;
 import model.Task;
@@ -88,8 +89,17 @@ public class Main {
         String password = scanner.nextLine();
 
         User user = userDAO.getUser(username);
-        if (user == null || !user.getPassword().equals(password)) {
+//        if (user == null || !user.getPassword().equals(password)) {
+//            System.out.println("Invalid username or password. Please try again.");
+//            return;
+//        }
+        try {
+            if (user == null || !user.getPassword().equals(password)) {
+                throw new IllegalLoginException("Invalid username or password. Please try again.");
+            }
+        }catch (Exception e) {
             System.out.println("Invalid username or password. Please try again.");
+            //loginUser(); this method works but I think it's more logical to return
             return;
         }
 
