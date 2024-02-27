@@ -1,3 +1,4 @@
+import com.sun.tools.javac.Main;
 import comparator.SortTasks;
 import dao.TaskDAO;
 import dao.TaskDAOImpl;
@@ -17,25 +18,26 @@ public class Menu {
     private static User currentUser;
 
     public static void main(String[] arg) {
-//        Task t1 = new Task("t1");
-//        Task t2 = new Task("t2");
-//        Task t3 = new Task("t3");
-//        Task t4 = new Task("t4");
-//        taskDAO.addTask(t1);
-//        taskDAO.addTask(t2);
-//        taskDAO.addTask(t3);
-//        taskDAO.addTask(t4);
-//        t1.setCompletionDate(new Date(20230101));
-//        t2.setCompletionDate(new Date(20220101));
-//        t3.setCompletionDate(new Date(20240101));
-//        t4.setCompletionDate(new Date(20210101));
-//        taskDAO.getTasksSortedByCompletionDate();
-//        taskDAO.presentTask();
-//        Visitor visitor = new Visitor("Vistor", "123");
-//        taskDAO.assignTask(t1.getTaskTitle(), visitor);
-//        taskDAO.assignTask(t2.getTaskTitle(), visitor);
-//        taskDAO.assignTask(t3.getTaskTitle(), visitor);
-//        taskDAO.assignTask(t4.getTaskTitle(), visitor);
+        Task t1 = new Task("t1");
+        Task t2 = new Task("t2");
+        Task t3 = new Task("t3");
+        Task t4 = new Task("t4");
+        taskDAO.addTask(t1);
+        taskDAO.addTask(t2);
+        taskDAO.addTask(t3);
+        taskDAO.addTask(t4);
+        t1.setCompletionDate(new Date(20230101));
+        t2.setCompletionDate(new Date(20220101));
+        t3.setCompletionDate(new Date(20240101));
+        t4.setCompletionDate(new Date(20210101));
+        taskDAO.getTasksSortedByCompletionDate();
+        //taskDAO.presentTask();
+        Visitor visitor = new Visitor("v1", "123");
+        userDAO.addUser(visitor);
+        taskDAO.assignTask(t1.getTaskTitle(), visitor);
+        taskDAO.assignTask(t2.getTaskTitle(), visitor);
+        taskDAO.assignTask(t3.getTaskTitle(), visitor);
+        taskDAO.assignTask(t4.getTaskTitle(), visitor);
 //        List<Task> uncT = visitor.getIncompleteTasks(visitor.getTasks());
 //        System.out.println("There are all uncompleted tasks: ");
 //        for (int i = 0; i < uncT.size(); i++) {
@@ -49,15 +51,27 @@ public class Menu {
 //            System.out.print(cT.get(i).getTaskTitle() + ";  ");
 //        }
 
+
         while (true) {
+            currentUser = null;
             System.out.println("Menu:");
             System.out.println("1. Register as Client");
             System.out.println("2. Register as Visitor");
             System.out.println("3. Login");
             System.out.println("0. Exit");
 
-            int choice = scanner.nextInt();
-            scanner.nextLine(); // Consume newline
+            int choice = 0;
+            boolean validInput = false;
+
+            while (!validInput) {
+                try {
+                    choice = scanner.nextInt();
+                    validInput = true;
+                    scanner.nextLine(); // Consume the invalid input
+                } catch (Exception e) {
+                    System.out.println("Error: Invalid input. Please enter an integer value.");
+                }
+            }
 
             switch (choice) {
                 case 1:
@@ -67,7 +81,12 @@ public class Menu {
                     registerUser("visitor");
                     break;
                 case 3:
-                    loginUser();
+                    try{
+                        loginUser();
+                    } catch (Exception e) {
+                        System.out.println("thread join failed");
+                    }
+
                     break;
                 case 0:
                     System.out.println("Exiting...");
@@ -105,7 +124,7 @@ public class Menu {
         System.out.println("Registration successful as " + role + ".");
     }
 
-    private static void loginUser() {
+    private static void loginUser() throws InterruptedException {
         System.out.println("Enter username:");
         String username = scanner.nextLine();
 
@@ -124,7 +143,11 @@ public class Menu {
         if (user instanceof Client) {
             clientMenu();
         } else if (user instanceof Visitor) {
-            visitorMenu();
+            //visitorMenu();
+            Visitor visitor = (Visitor) currentUser;
+            Thread t1 = new Thread(visitor);
+            t1.start();
+            t1.join();
         }
     }
 
