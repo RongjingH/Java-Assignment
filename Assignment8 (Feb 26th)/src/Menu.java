@@ -38,18 +38,10 @@ public class Menu {
         taskDAO.assignTask(t2.getTaskTitle(), visitor);
         taskDAO.assignTask(t3.getTaskTitle(), visitor);
         taskDAO.assignTask(t4.getTaskTitle(), visitor);
-//        List<Task> uncT = visitor.getIncompleteTasks(visitor.getTasks());
-//        System.out.println("There are all uncompleted tasks: ");
-//        for (int i = 0; i < uncT.size(); i++) {
-//            System.out.print(uncT.get(i).getTaskTitle() + ";  ");
-//        }
-//        System.out.println();
-//        visitor.markTaskAsCompleted(t1);
-//        List<Task> cT = visitor.getCompletedTasks(visitor.getTasks());
-//        System.out.println("There are all completed tasks: ");
-//        for (int i = 0; i < cT.size(); i++) {
-//            System.out.print(cT.get(i).getTaskTitle() + ";  ");
-//        }
+
+        //create a client
+        Client client = new Client("c1", "123");
+        userDAO.addUser(client);
 
 
         while (true) {
@@ -141,7 +133,11 @@ public class Menu {
 
         System.out.println("Login successful. Welcome, " + username + "!");
         if (user instanceof Client) {
-            clientMenu();
+            //clientMenu();
+            Client client = new Client(currentUser.getUsername(), currentUser.getPassword(), userDAO, taskDAO);
+            Thread thread = new Thread(client);
+            thread.start();
+            thread.join();
         } else if (user instanceof Visitor) {
             //visitorMenu();
             Visitor visitor = (Visitor) currentUser;
