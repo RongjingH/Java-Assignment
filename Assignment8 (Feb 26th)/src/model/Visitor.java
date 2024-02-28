@@ -81,15 +81,25 @@ public class Visitor extends User implements Runnable{
                     }
                     break;
                 case 3: // Mark a Task Completed
-//                    System.out.println("Enter task title");
-//                    String completedTaskTitle = scanner.nextLine();
-//
-//                    Task cpmpletedTask = ;
-//                    if (cpmpletedTask != null) {
-//                        cpmpletedTask.setCompleteState(true);
-//                    }
+                    System.out.println("Enter task title");
+                    String completedTaskTitle = scanner.nextLine();
+
+                    //create a completed task reference
+                    Task cpmpletedTask = null;
+                    for (Task task : tasks) {
+                        if (task.getTaskTitle().equals(completedTaskTitle)) {
+                            cpmpletedTask = task;
+                        }
+                    } //by this way the task title have to unique, which I need to limit later.
+
+                    if (cpmpletedTask != null) {
+                        cpmpletedTask.setCompleteState(true);
+                        System.out.println("Succeed!");
+                    } else {
+                        System.out.println("Error: Can't find the task! Please make sure you enter a correct task title");
+                    }
                     break;
-                case 4:
+                case 4: //See all Tasks Completion States
                     List<Task> completedTasks = this.getCompletedTasks(tasks);
                     System.out.println("There are all completed tasks: ");
                     for (int i = 0; i < completedTasks.size(); i++) {
